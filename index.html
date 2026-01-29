@@ -43,11 +43,15 @@
 
     <script>
         const recipes = [
+            { name: "Chicken Stir Fry", image: "images/chicken-stir-fry.jpg" },
+            { name: "Vegetable Soup", image: "images/vegetable-soup.jpg" },
+            { name: "Beef Lasagna", image: "images/beef-lasagna.jpg" },
+            { name: "Mac and Cheese", image: "images/mac-and-cheese.jpg" },
             { name: "Hamburger", image: "Images/Hamburger.png" },
             { name: "Philly Beef", image: "Images/philly-beef.png" },
             { name: "Beef Stew", image: "Images/beef-stew.png" },
             { name: "BBQ sloppy Joe", image: "Images/bbq-sloppy-joe.png" },
-            // Add more here as needed
+            // Add more dishes here as needed
         ];
 
         const input = document.getElementById('searchInput');
@@ -82,17 +86,23 @@
             }
             return matrix[b.length][a.length];
         }
+
         function updateResults() {
             const query = input.value.trim().toLowerCase();
             resultDiv.innerHTML = '';
             noResult.style.display = 'none';
+
             if (query.length < 2) return;
+
             const matches = recipes.filter(r => fuzzyMatch(r.name, query));
-            console.log('Query:', query, 'Matches found:', matches.map(m => m.name)); // temp debug
+
+            console.log('Query:', query, 'Matches found:', matches.map(m => m.name)); // temporary debug
+
             if (matches.length === 0) {
                 noResult.style.display = 'block';
                 return;
             }
+
             matches.forEach(match => {
                 const btn = document.createElement('button');
                 btn.textContent = match.name;
@@ -106,6 +116,7 @@
                 btn.style.border = 'none';
                 btn.style.borderRadius = '6px';
                 btn.style.cursor = 'pointer';
+
                 btn.onclick = function() {
                     resultDiv.innerHTML = '<h3 style="text-align:center; margin: 20px 0 10px;">' + match.name + '</h3>';
                     const img = document.createElement('img');
@@ -116,12 +127,17 @@
                     img.style.margin = '0 auto';
                     resultDiv.appendChild(img);
                 };
+
                 resultDiv.appendChild(btn);
             });
-        } 
+        }
+
         input.addEventListener('input', updateResults);
     </script>
+</body>
+</html>
        
+
 
 
 
