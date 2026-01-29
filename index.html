@@ -42,7 +42,7 @@
     </div>
 
     <script>
-        const recipes = [
+               const recipes = [
             { name: "Chicken Stir Fry", image: "images/chicken-stir-fry.jpg" },
             { name: "Vegetable Soup", image: "images/vegetable-soup.jpg" },
             { name: "Beef Lasagna", image: "images/beef-lasagna.jpg" },
@@ -51,7 +51,7 @@
             { name: "Philly Beef", image: "Images/philly-beef.png" },
             { name: "Beef Stew", image: "Images/beef-stew.png" },
             { name: "BBQ sloppy Joe", image: "Images/bbq-sloppy-joe.png" },
-            // Add more dishes here as needed
+            // Add more here
         ];
 
         const input = document.getElementById('searchInput');
@@ -96,7 +96,7 @@
 
             const matches = recipes.filter(r => fuzzyMatch(r.name, query));
 
-            console.log('Query:', query, 'Matches found:', matches.map(m => m.name)); // temporary debug
+            console.log('Query:', query, 'Matches found:', matches.map(m => m.name)); // remove this line later if you want
 
             if (matches.length === 0) {
                 noResult.style.display = 'block';
@@ -137,6 +137,7 @@
 </body>
 </html>
        
+
 
 
 
