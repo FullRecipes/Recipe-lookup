@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Lookup</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: sans-serif;
+            background: #f9f9f9;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        #result img {
+            max-width: 100%;
+            display: block;
+            margin: 15px auto 0;
+        }
+        #noResult {
+            color: #c00;
+            font-size: 17px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <input type="text" id="searchInput" placeholder="Type dish name..." autofocus>
+        <div id="result"></div>
+        <div id="noResult" style="display:none;">No match found — check spelling</div>
+    </div>
+
+    <script>
+        const recipes = [
+            { name: "Chicken Stir Fry", image: "images/chicken-stir-fry.jpg" },
+            { name: "Vegetable Soup",    image: "images/vegetable-soup.jpg" },
+            { name: "Beef Lasagna",      image: "images/beef-lasagna.jpg" },
+            { name: "Mac and Cheese",    image: "images/mac-and-cheese.jpg" },
+            // ↑ Add every dish here — name must match what's written on the label
+            // You can use full https:// URLs instead of images/ folder if you prefer
+        ];
+
+        const input = document.getElementById('searchInput');
+        const resultDiv = document.getElementById('result');
+        const noResult = document.getElementById('noResult');
+
+        function fuzzyMatch(str, query) {
+            if (!query) return false;
+            str = str.toLowerCase().replace(/\s+/g, ' ').trim();
+            query = query.toLowerCase().replace(/\s+/g, ' ').trim();
+            
+            // Very forgiving: contains the query anywhere, or query contains part of name
+            return str.includes(query) || query.includes(str) ||
+                   str.split(' ').some(word => query.includes(word)) ||
+                   levenshtein(str, query) <= 3;  // allow ~3 typos / edits
+        }
+
+        // Simple Levenshtein distance (edit distance) — good enough for small typos
+        function levenshtein(a, b) {
+            if (a.length === 0) return b.length;
+            if (b.length === 0) return a.length;
+            const matrix = Array(b.length + 1).fill().map(() => Array(a.length + 1).fill(0));
+            for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+            for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+            for (let j = 1; j <= b.length; j++) {
+                for (let i = 1; i <= a.length; i++) {
+                    const indicator = a[i-1] === b[j-1] ? 0 : 1;
+                    matrix[j][i] = Math.min(
+                        matrix[j][i-1] + 1,             // deletion
+                        matrix[j-1][i] + 1,             // insertion
+                        matrix[j-1][i-1] + indicator    // substitution
+                    );
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        function updateResults() {
+            const query = input.value.trim();
+            resultDiv.innerHTML = '';
+            noResult.style.display = 'none';
+
+            if (query.length < 2) return;
+
+            const matches = recipes.filter(r => fuzzyMatch(r.name, query));
+
+            if (matches.length === 0) {
+                noResult.style.display = 'block';
+                return;
+            }
+
+            // Show first/best match (or all if you want — usually 1 is enough)
+            const best = matches[0];
+            const img = document.createElement('img');
+            img.src = best.image;
+            img.alt = best.name;
+            resultDiv.appendChild(img);
+
+            // Optional: show name above image
+            // const title = document.createElement('h3');
+            // title.textContent = best.name;
+            // resultDiv.insertBefore(title, img);
+        }
+
+        // Live search as they type (no button needed)
+        input.addEventListener('input', updateResults);
+
+        // Optional: also search on Enter / focus loss, but input event is usually enough
+    </script>
+</body>
+</html>
