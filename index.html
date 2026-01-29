@@ -90,31 +90,48 @@
             return matrix[b.length][a.length];
         }
 
-        function updateResults() {
-            const query = input.value.trim();
-            resultDiv.innerHTML = '';
-            noResult.style.display = 'none';
+       function updateResults() {
+    const query = input.value.trim().toLowerCase();
+    resultDiv.innerHTML = '';  // Clear previous results
+    noResult.style.display = 'none';
 
-            if (query.length < 2) return;
+    if (query.length < 2) return;  // Don't search until at least 2 chars
 
-            const matches = recipes.filter(r => fuzzyMatch(r.name, query));
+    const matches = recipes.filter(r => fuzzyMatch(r.name.toLowerCase(), query));
 
-            if (matches.length === 0) {
-                noResult.style.display = 'block';
-                return;
-            }
+    if (matches.length === 0) {
+        noResult.style.display = 'block';
+        return;
+    }
 
-            // Show first/best match (or all if you want — usually 1 is enough)
-            const best = matches[0];
+    // Show ALL matches as clickable buttons (even if only 1)
+    matches.forEach(match => {
+        const btn = document.createElement('button');
+        btn.textContent = match.name;
+        btn.style.display = 'block';
+        btn.style.margin = '12px 0';
+        btn.style.padding = '14px';
+        btn.style.width = '100%';
+        btn.style.fontSize = '18px';
+        btn.style.background = '#4CAF50';
+        btn.style.color = 'white';
+        btn.style.border = 'none';
+        btn.style.borderRadius = '6px';
+        btn.style.cursor = 'pointer';
+        btn.onclick = function() {
+            // Clear everything and show just this dish's name + image
+            resultDiv.innerHTML = '<h3 style="text-align:center; margin: 20px 0 10px;">' + match.name + '</h3>';
             const img = document.createElement('img');
-            img.src = best.image;
-            img.alt = best.name;
+            img.src = match.image;
+            img.alt = match.name + ' recipe and allergens';
+            img.style.maxWidth = '100%';
+            img.style.display = 'block';
+            img.style.margin = '0 auto';
             resultDiv.appendChild(img);
-
-            // Optional: show name above image
-            // const title = document.createElement('h3');
-            // title.textContent = best.name;
-            // resultDiv.insertBefore(title, img);
+        };
+        resultDiv.appendChild(btn);
+    });
+}
         }
 
         // Live search as they type (no button needed)
@@ -125,6 +142,7 @@
 </body>
 
 </html>
+
 
 
 
