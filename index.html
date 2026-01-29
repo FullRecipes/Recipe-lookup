@@ -86,23 +86,17 @@
             }
             return matrix[b.length][a.length];
         }
-
         function updateResults() {
             const query = input.value.trim().toLowerCase();
             resultDiv.innerHTML = '';
             noResult.style.display = 'none';
-
             if (query.length < 2) return;
-
             const matches = recipes.filter(r => fuzzyMatch(r.name, query));
-
-            console.log('Query:', query, 'Matches found:', matches.map(m => m.name));  // ← temp debug
-
+            console.log('Query:', query, 'Matches found:', matches.map(m => m.name)); // temp debug
             if (matches.length === 0) {
                 noResult.style.display = 'block';
                 return;
             }
-
             matches.forEach(match => {
                 const btn = document.createElement('button');
                 btn.textContent = match.name;
@@ -128,12 +122,12 @@
                 };
                 resultDiv.appendChild(btn);
             });
-    
+        }  // ← Add this line: closes the updateResults function
 
         input.addEventListener('input', updateResults);
     </script>
-</body>
-</html>
+       
+
 
 
 
