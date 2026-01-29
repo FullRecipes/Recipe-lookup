@@ -44,16 +44,14 @@
     <script>
         const recipes = [
             { name: "Chicken Stir Fry", image: "images/chicken-stir-fry.jpg" },
-            { name: "Vegetable Soup",    image: "images/vegetable-soup.jpg" },
-            { name: "Beef Lasagna",      image: "images/beef-lasagna.jpg" },
-            { name: "Mac and Cheese",    image: "images/mac-and-cheese.jpg" },
+            { name: "Vegetable Soup", image: "images/vegetable-soup.jpg" },
+            { name: "Beef Lasagna", image: "images/beef-lasagna.jpg" },
+            { name: "Mac and Cheese", image: "images/mac-and-cheese.jpg" },
             { name: "Hamburger", image: "Images/Hamburger.png" },
-            { name: "Philly Beef",    image: "Images/philly-beef.png" },
+            { name: "Philly Beef", image: "Images/philly-beef.png" },
             { name: "Beef Stew", image: "Images/beef-stew.png" },
             { name: "BBQ sloppy Joe", image: "Images/bbq-sloppy-joe.png" },
-            
-            // ↑ Add every dish here — name must match what's written on the label
-            // You can use full https:// URLs instead of images/ folder if you prefer
+            // Add more here as needed
         ];
 
         const input = document.getElementById('searchInput');
@@ -65,13 +63,11 @@
             str = str.toLowerCase().replace(/\s+/g, ' ').trim();
             query = query.toLowerCase().replace(/\s+/g, ' ').trim();
             
-            // Very forgiving: contains the query anywhere, or query contains part of name
             return str.includes(query) || query.includes(str) ||
                    str.split(' ').some(word => query.includes(word)) ||
-                   levenshtein(str, query) <= 3;  // allow ~3 typos / edits
+                   levenshtein(str, query) <= 3;
         }
 
-        // Simple Levenshtein distance (edit distance) — good enough for small typos
         function levenshtein(a, b) {
             if (a.length === 0) return b.length;
             if (b.length === 0) return a.length;
@@ -82,67 +78,63 @@
                 for (let i = 1; i <= a.length; i++) {
                     const indicator = a[i-1] === b[j-1] ? 0 : 1;
                     matrix[j][i] = Math.min(
-                        matrix[j][i-1] + 1,             // deletion
-                        matrix[j-1][i] + 1,             // insertion
-                        matrix[j-1][i-1] + indicator    // substitution
+                        matrix[j][i-1] + 1,
+                        matrix[j-1][i] + 1,
+                        matrix[j-1][i-1] + indicator
                     );
                 }
             }
             return matrix[b.length][a.length];
         }
 
-       function updateResults() {
-    const query = input.value.trim().toLowerCase();
-    resultDiv.innerHTML = '';  // Clear previous results
-    noResult.style.display = 'none';
+        function updateResults() {
+            const query = input.value.trim().toLowerCase();
+            resultDiv.innerHTML = '';
+            noResult.style.display = 'none';
 
-    if (query.length < 2) return;  // Don't search until at least 2 chars
+            if (query.length < 2) return;
 
-    const matches = recipes.filter(r => fuzzyMatch(r.name.toLowerCase(), query));
+            const matches = recipes.filter(r => fuzzyMatch(r.name, query));
 
-    if (matches.length === 0) {
-        noResult.style.display = 'block';
-        return;
-    }
+            console.log('Query:', query, 'Matches found:', matches.map(m => m.name));  // ← temp debug
 
-    // Show ALL matches as clickable buttons (even if only 1)
-    matches.forEach(match => {
-        const btn = document.createElement('button');
-        btn.textContent = match.name;
-        btn.style.display = 'block';
-        btn.style.margin = '12px 0';
-        btn.style.padding = '14px';
-        btn.style.width = '100%';
-        btn.style.fontSize = '18px';
-        btn.style.background = '#4CAF50';
-        btn.style.color = 'white';
-        btn.style.border = 'none';
-        btn.style.borderRadius = '6px';
-        btn.style.cursor = 'pointer';
-        btn.onclick = function() {
-            // Clear everything and show just this dish's name + image
-            resultDiv.innerHTML = '<h3 style="text-align:center; margin: 20px 0 10px;">' + match.name + '</h3>';
-            const img = document.createElement('img');
-            img.src = match.image;
-            img.alt = match.name + ' recipe and allergens';
-            img.style.maxWidth = '100%';
-            img.style.display = 'block';
-            img.style.margin = '0 auto';
-            resultDiv.appendChild(img);
-        };
-        resultDiv.appendChild(btn);
-    });
-}
+            if (matches.length === 0) {
+                noResult.style.display = 'block';
+                return;
+            }
+
+            matches.forEach(match => {
+                const btn = document.createElement('button');
+                btn.textContent = match.name;
+                btn.style.display = 'block';
+                btn.style.margin = '12px 0';
+                btn.style.padding = '14px';
+                btn.style.width = '100%';
+                btn.style.fontSize = '18px';
+                btn.style.background = '#4CAF50';
+                btn.style.color = 'white';
+                btn.style.border = 'none';
+                btn.style.borderRadius = '6px';
+                btn.style.cursor = 'pointer';
+                btn.onclick = function() {
+                    resultDiv.innerHTML = '<h3 style="text-align:center; margin: 20px 0 10px;">' + match.name + '</h3>';
+                    const img = document.createElement('img');
+                    img.src = match.image;
+                    img.alt = match.name + ' recipe and allergens';
+                    img.style.maxWidth = '100%';
+                    img.style.display = 'block';
+                    img.style.margin = '0 auto';
+                    resultDiv.appendChild(img);
+                };
+                resultDiv.appendChild(btn);
+            });
         }
 
-        // Live search as they type (no button needed)
         input.addEventListener('input', updateResults);
-
-        // Optional: also search on Enter / focus loss, but input event is usually enough
     </script>
 </body>
-
 </html>
+
 
 
 
